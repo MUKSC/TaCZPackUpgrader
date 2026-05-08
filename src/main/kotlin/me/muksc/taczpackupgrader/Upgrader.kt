@@ -139,6 +139,7 @@ object Upgrader {
             if (data.isDirectory()) {
                 data.forEachDirectoryEntry { namespace ->
                     upgradeBlockDatas(namespace)
+                    upgradeLootInjectors(namespace)
                     upgradeRecipes(namespace)
                 }
             }
@@ -177,7 +178,7 @@ object Upgrader {
 
 
     fun iteratePacks(path: Path, destinationDirectory: Path): Iterator<Path> = iterator {
-        if (path.name == "tacz_default_gun" || path.nameWithoutExtension.endsWith(SUFFIX)) return@iterator
+        if (!shouldUpgrade(path)) return@iterator
         if (path.isRegularFile()) {
             if (path.name == "gunpack.meta.json") yield(initializePack(path.parent, destinationDirectory))
             if (path.extension == "zip") {
@@ -212,9 +213,9 @@ object Upgrader {
         for (block in Files.walk(blocks)) {
             if (block.isDirectory()) continue
             try {
-                val obj = block.bufferedReader().use { gson.fromJson(it, JsonObject::class.java) }.apply {
-                    upgradeBlockData(this)
-                }
+                val obj = block.bufferedReader().use {
+                    gson.fromJson(it, JsonObject::class.java)
+                }.apply(::upgradeBlockData)
                 block.bufferedWriter().use { gson.toJson(obj, it) }
             } catch (e: Exception) {
                 LOGGER.error("Failed to convert block data: $block", e)
@@ -224,10 +225,44 @@ object Upgrader {
     }
 
     fun upgradeBlockData(obj: JsonObject) {
-        obj["tabs"]?.asJsonArray?.also { tabs ->
-            for (tab in tabs) {
-                val icon = tab.asJsonObject["icon"]?.asJsonObject ?: continue
-                upgradeItemStack(icon)
+        obj["tabs"]?.asJsonArray?.forEach { tab ->
+            val icon = tab.asJsonObject["icon"]?.asJsonObject ?: return@forEach
+            upgradeItemStack(icon)
+        }
+    }
+
+    fun upgradeLootInjectors(path: Path) {
+        val injectors = path.resolve("tacz_loot_injectors")
+        if (!injectors.exists()) return
+        for (injector in Files.walk(injectors)) {
+            if (injector.isDirectory()) continue
+            try {
+                val obj = injector.bufferedReader().use {
+                    gson.fromJson(it, JsonObject::class.java)
+                }.apply(::upgradeLootInjector)
+                injector.bufferedWriter().use { gson.toJson(obj, it) }
+            } catch (e: Exception) {
+                LOGGER.error("Failed to convert loot injector: $injector", e)
+                injector.deleteExisting()
+            }
+        }
+    }
+
+    fun upgradeLootInjector(obj: JsonObject) {
+        obj["pools"]?.asJsonArray?.forEach { pool ->
+            pool.asJsonObject["entries"]?.asJsonArray?.forEach { entry ->
+                entry.asJsonObject["functions"]?.asJsonArray?.forEach { function ->
+                    if (function !is JsonObject) return@forEach
+                    when (function["function"].asString) {
+                        "minecraft:set_nbt" -> {
+                            function.add("function", JsonPrimitive("minecraft:set_components"))
+                            function.add("components", JsonObject().apply {
+                                add("minecraft:custom_data", JsonPrimitive(function["tag"].asString))
+                            })
+                            function.remove("tag")
+                        }
+                    }
+                }
             }
         }
     }
@@ -238,9 +273,9 @@ object Upgrader {
         for (recipe in Files.walk(recipes)) {
             if (recipe.isDirectory()) continue
             try {
-                val obj = recipe.bufferedReader().use { gson.fromJson(it, JsonObject::class.java) }.apply {
-                    upgradeRecipe(this)
-                }
+                val obj = recipe.bufferedReader().use {
+                    gson.fromJson(it, JsonObject::class.java)
+                }.apply(::upgradeRecipe)
                 recipe.bufferedWriter().use { gson.toJson(obj, it) }
             } catch (e: Exception) {
                 LOGGER.error("Failed to convert recipe: $recipe", e)
@@ -253,11 +288,9 @@ object Upgrader {
     fun upgradeRecipe(obj: JsonObject) {
         when (obj["type"]?.asJsonPrimitive?.asString) {
             "tacz:gun_smith_table_crafting" -> {
-                obj["materials"]?.asJsonArray?.also { materials ->
-                    for (material in materials) {
-                        val ingredient = material.asJsonObject["item"]?.asJsonObject ?: continue
-                        upgradeIngredient(ingredient)
-                    }
+                obj["materials"]?.asJsonArray?.forEach { material ->
+                    val ingredient = material.asJsonObject["item"]?.asJsonObject ?: return@forEach
+                    upgradeIngredient(ingredient)
                 }
                 obj["result"]?.asJsonObject?.also { result ->
                     if (result["type"]?.asJsonPrimitive?.asString != "custom") return@also
@@ -276,10 +309,8 @@ object Upgrader {
                 }
             }
             "minecraft:crafting_shapeless" -> {
-                obj["ingredients"]?.asJsonArray?.also { ingredients ->
-                    for (ingredient in ingredients) {
-                        upgradeIngredient(ingredient.asJsonObject)
-                    }
+                obj["ingredients"]?.asJsonArray?.forEach { ingredient ->
+                    upgradeIngredient(ingredient.asJsonObject)
                 }
                 obj["result"]?.asJsonObject?.also { stack ->
                     upgradeItemStack(stack)
