@@ -13,8 +13,6 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 import kotlin.io.path.*
-import kotlin.io.path.deleteRecursively
-import kotlin.io.path.exists
 
 @OptIn(ExperimentalPathApi::class)
 object Upgrader {

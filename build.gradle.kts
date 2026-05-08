@@ -37,7 +37,7 @@ neoForge {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven("https://repo.nyon.dev/releases")
+    maven("https://thedarkcolour.github.io/KotlinForForge")
 }
 
 dependencies {

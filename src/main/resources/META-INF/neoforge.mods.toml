@@ -1,5 +1,5 @@
-modLoader = "javafml"
-loaderVersion = "[0,)"
+modLoader = "kotlinforforge"
+loaderVersion = "[5.11,)"
 authors = "MUKSC"
 license = "ARR"
 

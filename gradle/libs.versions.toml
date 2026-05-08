@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.1.10"
+kotlin = "2.3.0"
 neoforge = "21.1.93"
 neoforge-range = "[21,)"
 moddev = "2.0.74"
@@ -8,10 +8,10 @@ minecraft = "1.21.1"
 minecraft-range = "[1.21.1]"
 mod-publish = "1.0.0"
 
-kotlin-lang-forge = "2.6.0-k2.1.10-3.0+neoforge"
+kff = "5.11.0"
 
 [libraries]
-kotlin-neoforge = { module = "dev.nyon:KotlinLangForge", version.ref = "kotlin-lang-forge" }
+kotlin-neoforge = { module = "thedarkcolour:kotlinforforge-neoforge", version.ref = "kff" }
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
