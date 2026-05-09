@@ -1,1 +1,1 @@
-- Support TaCZ 1.1.8 loot injectors
+- The mod actually works now
