@@ -1,1 +1,1 @@
-- The mod actually works now
+- Stopped JiJing Kotlin For Forge
