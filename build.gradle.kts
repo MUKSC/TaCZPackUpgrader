@@ -41,7 +41,7 @@ repositories {
 }
 
 dependencies {
-    implementation(jarJar(libs.kotlin.neoforge.get())) { }
+    implementation(libs.kotlin.neoforge)
 }
 
 java {
@@ -59,7 +59,8 @@ tasks.processResources {
         "version" to project.version,
         "name" to project.property("mod_name") as String,
         "minecraft_version" to libs.versions.minecraft.range.get(),
-        "loader_version" to libs.versions.neoforge.range.get()
+        "loader_version" to libs.versions.neoforge.range.get(),
+        "kff_version" to "[${libs.versions.kff.get()},]"
     )
     filteringCharset = "UTF-8"
     inputs.properties(properties)
@@ -77,12 +78,16 @@ publishMods {
         projectId = project.property("modrinth_id") as String
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         minecraftVersions.add("1.21.1")
+
+        requires("kotlin-for-forge")
     }
 
     curseforge {
         projectId = project.property("curseforge_id") as String
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         minecraftVersions.add("1.21.1")
+
+        requires("kotlin-for-forge")
     }
 
     github {
