@@ -1,5 +1,6 @@
 [versions]
 kotlin = "2.3.0"
+dotenv = "4.0.0"
 neoforge = "21.1.93"
 neoforge-range = "[21,)"
 moddev = "2.0.74"
@@ -15,5 +16,6 @@ kotlin-neoforge = { module = "thedarkcolour:kotlinforforge-neoforge", version.re
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+dotenv = { id = "co.uzzu.dotenv.gradle", version.ref = "dotenv" }
 moddev = { id = "net.neoforged.moddev", version.ref = "moddev" }
 mod-publish = { id = "me.modmuss50.mod-publish-plugin", version.ref = "mod-publish" }

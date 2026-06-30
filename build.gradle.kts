@@ -1,4 +1,5 @@
 plugins {
+    alias(libs.plugins.dotenv)
     alias(libs.plugins.kotlin)
     alias(libs.plugins.moddev)
     alias(libs.plugins.mod.publish)
@@ -77,6 +78,7 @@ publishMods {
     modrinth {
         projectId = project.property("modrinth_id") as String
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+            .orElse(provider { env.fetch("MODRINTH_TOKEN") })
         minecraftVersions.add("1.21.1")
 
         requires("kotlin-for-forge")
@@ -85,6 +87,7 @@ publishMods {
     curseforge {
         projectId = project.property("curseforge_id") as String
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+            .orElse(provider { env.fetch("CURSEFORGE_TOKEN") })
         minecraftVersions.add("1.21.1")
 
         requires("kotlin-for-forge")
@@ -93,6 +96,7 @@ publishMods {
     github {
         repository = project.property("repository") as String
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
+            .orElse(provider { env.fetch("GITHUB_TOKEN") })
         commitish = "main"
         tagName = "v${project.version}"
     }
