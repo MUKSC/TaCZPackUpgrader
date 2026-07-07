@@ -23,10 +23,3 @@ type = "REQUIRED"
 versionRange = "${minecraft_version}"
 ordering = "NONE"
 side = "BOTH"
-
-[[dependencies."${id}"]]
-modId = "kotlinforforge"
-type = "required"
-versionRange = "${kff_version}"
-ordering = "AFTER"
-side = "BOTH"

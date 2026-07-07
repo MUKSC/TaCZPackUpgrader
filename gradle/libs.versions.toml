@@ -9,10 +9,8 @@ minecraft = "1.21.1"
 minecraft-range = "[1.21.1]"
 mod-publish = "1.0.0"
 
-kff = "5.11.0"
-
 [libraries]
-kotlin-neoforge = { module = "thedarkcolour:kotlinforforge-neoforge", version.ref = "kff" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

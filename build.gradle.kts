@@ -36,13 +36,11 @@ neoForge {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
-    maven("https://thedarkcolour.github.io/KotlinForForge")
 }
 
 dependencies {
-    implementation(libs.kotlin.neoforge)
+    "additionalRuntimeClasspath"(jarJar(libs.kotlin.stdlib.get()) { })
 }
 
 java {
@@ -60,8 +58,7 @@ tasks.processResources {
         "version" to project.version,
         "name" to project.property("mod_name") as String,
         "minecraft_version" to libs.versions.minecraft.range.get(),
-        "loader_version" to libs.versions.neoforge.range.get(),
-        "kff_version" to "[${libs.versions.kff.get()},]"
+        "loader_version" to libs.versions.neoforge.range.get()
     )
     filteringCharset = "UTF-8"
     inputs.properties(properties)
@@ -80,8 +77,6 @@ publishMods {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
             .orElse(provider { env.fetch("MODRINTH_TOKEN") })
         minecraftVersions.add("1.21.1")
-
-        requires("kotlin-for-forge")
     }
 
     curseforge {
@@ -89,8 +84,6 @@ publishMods {
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
             .orElse(provider { env.fetch("CURSEFORGE_TOKEN") })
         minecraftVersions.add("1.21.1")
-
-        requires("kotlin-for-forge")
     }
 
     github {
