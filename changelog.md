@@ -1,1 +1,1 @@
-- Stopped JiJing Kotlin For Forge
+- Removed Kotlin For Forge dependency
